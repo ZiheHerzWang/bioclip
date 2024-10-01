@@ -1,0 +1,14 @@
+nohup: ignoring input
+Running with the following configuration:
+Batch size: 1
+Learning rate: 0.001
+Weight decay (AdamW): 1e-4
+Epochs: 20
+Optimizer: adamw
+Training JSON file: utils/data_load/train.json
+Validation JSON file: utils/data_load/val.json
+Classname file: /home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/class_mapping.txt
+Log file: run_train_eval_20240928_155433.log
+Starting training...
+Training completed. Starting evaluation on validation set...
+Training and evaluation process completed. Output logged to run_train_eval_20240928_155433.log
