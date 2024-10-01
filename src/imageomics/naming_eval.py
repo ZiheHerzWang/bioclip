@@ -131,7 +131,7 @@ class Taxon:
 def to_classes(data,text_type):
     if text_type == 'asis':
         return data['class']
-
+    
     data_view = data.drop(columns=list(set(data.keys()) - set(Taxon.__dict__.keys())))
 
     if text_type == 'sci':

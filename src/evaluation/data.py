@@ -6,9 +6,9 @@ from PIL import Image
 from torchvision import datasets
 from torch.utils.data import Dataset, DataLoader
 from ..imageomics import naming_eval
+from typing import Dict, List, Tuple
 
-
-def make_splits(directory) -> dict[str, list[str]]:
+def make_splits(directory) -> Dict[str, List[str]]: 
     classes = sorted(entry.name for entry in os.scandir(directory) if entry.is_dir())
     if not classes:
         raise FileNotFoundError(f"Couldn't find any class folder in {directory}.")
@@ -47,7 +47,7 @@ def make_splits(directory) -> dict[str, list[str]]:
 
 
 class PretrainingData(datasets.ImageFolder):
-    def find_classes(self, directory: str) -> tuple[list[str], dict[str, int]]:
+    def find_classes(self, directory: str) -> Tuple[List[str], Dict[str, int]]:
         """
         Only chooses classes that are unseen during pretraining
         """
@@ -59,7 +59,7 @@ class PretrainingData(datasets.ImageFolder):
 
 
 class UnseenData(datasets.ImageFolder):
-    def find_classes(self, directory: str) -> tuple[list[str], dict[str, int]]:
+    def find_classes(self, directory: str) -> Tuple[List[str], Dict[str, int]]:
         """
         Only chooses classes that are unseen during pretraining
         """
@@ -71,7 +71,7 @@ class UnseenData(datasets.ImageFolder):
 
 
 class SeenData(datasets.ImageFolder):
-    def find_classes(self, directory: str) -> tuple[list[str], dict[str, int]]:
+    def find_classes(self, directory: str) -> Tuple[List[str], Dict[str, int]]:
         """
         Only chooses classes that are seen during pretraining
         """
@@ -98,6 +98,7 @@ class DatasetFromFile(Dataset):
 
         self.data = pd.read_csv(label_filepath, index_col=0).fillna('')
         self.transform = transform
+        
         self.data['class'] = naming_eval.to_classes(self.data,classes)
         self.classes = self.data['class'].unique()
         # create class_to_idx dict

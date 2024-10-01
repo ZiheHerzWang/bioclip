@@ -17,12 +17,8 @@ import torch
 import torch.nn.functional as F
 from tqdm import tqdm
 
-from ..open_clip import (
-    create_model_and_transforms,
-    get_cast_dtype,
-    get_tokenizer,
-    trace_model,
-)
+from ..open_clip import get_cast_dtype,trace_model
+
 from ..training.imagenet_zeroshot_data import openai_imagenet_template
 from ..training.logger import setup_logging
 from ..training.precision import get_autocast
@@ -30,8 +26,7 @@ from ..training.precision import get_autocast
 from .data import DatasetFromFile
 from .params import parse_args
 from .utils import init_device, random_seed, load_json
-
-
+import open_clip
 
 def get_dataloader(dataset, batch_size, num_workers):
     return torch.utils.data.DataLoader(
@@ -41,15 +36,20 @@ def get_dataloader(dataset, batch_size, num_workers):
         sampler=None,
     )
 
+def load_bioclip_model():
+    model, preprocess_train, preprocess_val = open_clip.create_model_and_transforms('hf-hub:imageomics/bioclip')
+    tokenizer = open_clip.get_tokenizer('hf-hub:imageomics/bioclip')
+    return model, preprocess_train, preprocess_val, tokenizer
 
-def zero_shot_classifier(model, classnames, templates, args):
-    tokenizer = get_tokenizer(args.model)
+
+def zero_shot_classifier(model, classnames, templates, args, tokenizer):
     with torch.no_grad():
         zeroshot_weights = []
         for classname in tqdm(classnames):
             texts = [template(classname) for template in templates]  # format with class
             texts = tokenizer(texts).to(args.device)  # tokenize
             class_embeddings = model.encode_text(texts)
+            print(type(model))
             class_embedding = F.normalize(class_embeddings, dim=-1).mean(dim=0)
             class_embedding /= class_embedding.norm()
             zeroshot_weights.append(class_embedding)
@@ -61,7 +61,7 @@ def accuracy(output, target, topk=(1,)):
     pred = output.topk(max(topk), 1, True, True)[1].t()
     correct = pred.eq(target.view(1, -1).expand_as(pred))
     return dict([
-        (k,float(correct[:k].reshape(-1).float().sum(0, keepdim=True).cpu().numpy()))
+        (k, float(correct[:k].reshape(-1).float().sum(0, keepdim=True).cpu().numpy()))
         for k in topk
     ])
 
@@ -72,33 +72,30 @@ def run(model, classifier, dataloader, args):
     with torch.no_grad():
         n = 0.0
         topk = dict()
-        for i in (1,min(len(dataloader.dataset.classes),3), min(len(dataloader.dataset.classes),5)):
+        for i in (1, min(len(dataloader.dataset.classes), 3), min(len(dataloader.dataset.classes), 5)):
             topk[i] = 0.0
         for images, target in tqdm(dataloader, unit_scale=args.batch_size):
-            images = images.to(args.device) #images.shape: torch.Size([batch_size, 3 rgb channels, image_height, image_width])
+            images = images.to(args.device)  # images.shape: torch.Size([batch_size, 3, height, width])
             if cast_dtype is not None:
                 images = images.to(dtype=cast_dtype)
             target = target.to(args.device)
 
             with autocast():
-                # predict
                 image_features = model.encode_image(images)
                 image_features = F.normalize(image_features, dim=-1)
-                # logits = 100.0 * image_features @ classifier
                 logits = model.logit_scale.exp() * image_features @ classifier
 
-            # measure accuracy
             acc = accuracy(logits, target, topk=topk.keys())
-            for k,v in acc.items():
+            for k, v in acc.items():
                 topk[k] += v
             n += images.size(0)
 
-    for k,v in acc.items():
+    for k, v in acc.items():
         topk[k] /= n
     return topk
 
 
-def zero_shot_eval(model, data, args):
+def zero_shot_eval(model, data, args, tokenizer):
     results = {}
 
     logging.info("Starting zero-shot.")
@@ -108,12 +105,12 @@ def zero_shot_eval(model, data, args):
         classnames = [c for c in data[split].dataset.classes]
 
         classifier = zero_shot_classifier(
-            model, classnames, openai_imagenet_template, args
+            model, classnames, openai_imagenet_template, args, tokenizer
         )
 
         topk = run(model, classifier, data[split], args)
 
-        for k,v in topk.items():
+        for k, v in topk.items():
             results[f"{split}-top{k}"] = v
 
         logging.info("Finished zero-shot %s with total %d classes.", split, len(data[split].dataset.classes))
@@ -127,9 +124,6 @@ if __name__ == "__main__":
     args = parse_args(sys.argv[1:])
 
     if torch.cuda.is_available():
-        # This enables tf32 on Ampere GPUs which is only 8% slower than
-        # float16 and almost as accurate as float32
-        # This was a default in pytorch until 1.12
         torch.backends.cuda.matmul.allow_tf32 = True
         torch.backends.cudnn.benchmark = True
         torch.backends.cudnn.deterministic = False
@@ -138,7 +132,6 @@ if __name__ == "__main__":
 
     args.save_logs = args.logs and args.logs.lower() != "none"
 
-    # get the name of the experiments
     if args.save_logs and args.name is None:
         # sanitize model name for filesystem/uri use
         model_name_safe = args.model.replace("/", "-")
@@ -174,27 +167,15 @@ if __name__ == "__main__":
         args.force_image_size = args.force_image_size[0]
 
     random_seed(args.seed, 0)
-    model, preprocess_train, preprocess_val = create_model_and_transforms(
-        args.model,
-        args.pretrained,
-        precision=args.precision,
-        device=device,
-        jit=args.torchscript,
-        force_quick_gelu=args.force_quick_gelu,
-        force_custom_text=args.force_custom_text,
-        force_patch_dropout=None,
-        force_image_size=args.force_image_size,
-        pretrained_image=args.pretrained_image,
-        image_mean=args.image_mean,
-        image_std=args.image_std,
-        aug_cfg=args.aug_cfg,
-        output_dict=True,
-    )
+
+    model, preprocess_train, preprocess_val, tokenizer = load_bioclip_model()
+    model = model.to(device)
 
     random_seed(args.seed, args.rank)
 
     if args.trace:
         model = trace_model(model, batch_size=args.batch_size, device=device)
+
 
     logging.info("Model:")
     logging.info(f"{str(model)}")
@@ -215,14 +196,21 @@ if __name__ == "__main__":
     data = {
         "val-unseen": get_dataloader(
             DatasetFromFile(args.data_root, args.label_filename, transform=preprocess_val, classes=args.text_type),
-            batch_size=args.batch_size,num_workers=args.workers
+            batch_size=args.batch_size, num_workers=args.workers
         ),
     }
-
-    model.eval()
-    metrics = zero_shot_eval(model, data, args)
+    print(f"Number of samples in val-unseen: {len(data['val-unseen'].dataset)}")
+    classnames = data["val-unseen"].dataset.classes
+    print(f"Classes in val-unseen: {classnames}")
     
+    model.eval()
+    metrics = zero_shot_eval(model, data, args, tokenizer)
+
     logging.info("Results:")
+    print("Results:")
+    
     for key, value in metrics.items():
+        print(f"  {key}: {value*100:.2f}")
         logging.info(f"  {key}: {value*100:.2f}")
     logging.info("Done.")
+    print("Done.")

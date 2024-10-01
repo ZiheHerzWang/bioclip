@@ -1,9 +1,3 @@
-"""
-Do few-shot classification.
-
-Single-process. If you want to run all evaluations of a single model at once, look in scripts/.
-"""
-
 import datetime
 import logging
 import os
@@ -24,6 +18,7 @@ from scipy.stats import mode
 from .data import DatasetFromFile
 from .params import parse_args
 from .utils import init_device, random_seed
+from sklearn.model_selection import train_test_split
 
 from ..open_clip import (
     create_model_and_transforms,
@@ -31,16 +26,20 @@ from ..open_clip import (
     get_tokenizer,
     trace_model,
 )
+import open_clip
 from ..training.logger import setup_logging
 from ..training.precision import get_autocast
 
 
+def load_bioclip_model():
+    model, preprocess_train, preprocess_val = open_clip.create_model_and_transforms('hf-hub:imageomics/bioclip')
+    tokenizer = open_clip.get_tokenizer('hf-hub:imageomics/bioclip')
+    return model, preprocess_train, preprocess_val
+
 
 def save_pickle(base_path, data):
-    print('base_path:',base_path)
     os.makedirs(base_path, exist_ok=True)
-    file = os.path.join(base_path,'pickle.p')
-    print('pickle file location:',file)
+    file = os.path.join(base_path, 'pickle.p')
     with open(file, 'wb') as f:
         pickle.dump(data, f)
     return file
@@ -59,10 +58,10 @@ def get_dataloader(dataset, batch_size, num_workers):
         sampler=None,
     )
 
-def accuracy(output, target, topk=(1,)):
-    pred = output.topk(max(topk), 1, True, True)[1].t() #[batch_size, classes] -> [batch_size, 1] -> [1, batch_size], which class # topk = (values, indices)
-    correct = pred.eq(target.view(1, -1).expand_as(pred)) #shape: correct=targe.view=pred=[1, batch_size], True or False
 
+def accuracy(output, target, topk=(1,)):
+    pred = output.topk(max(topk), 1, True, True)[1].t()
+    correct = pred.eq(target.view(1, -1).expand_as(pred))
     return [
         float(correct[:k].reshape(-1).float().sum(0, keepdim=True).cpu().numpy())
         for k in topk
@@ -72,26 +71,33 @@ def accuracy(output, target, topk=(1,)):
 def run(model, dataloader, args):
     autocast = get_autocast(args.precision)
     cast_dtype = get_cast_dtype(args.precision)
+
+    if cast_dtype is not None:
+        model = model.half()
+    else:
+        model = model.float()
+
+    model = model.to(args.device)
+
     with torch.no_grad():
         feature_list = []
         target_list = []
         for images, target in tqdm(dataloader, unit_scale=args.batch_size):
             target_list.append(target.numpy())
-            images = images.to(args.device) #images.shape: torch.Size([batch_size, 3 rgb channels, image_height, image_width])
+            images = images.to(args.device)
+
             if cast_dtype is not None:
                 images = images.to(dtype=cast_dtype)
             target = target.to(args.device)
-            
 
             with autocast():
-                image_features = model.encode_image(images) #batch_size x emb_size
+                image_features = model.encode_image(images)
                 image_features = F.normalize(image_features, dim=-1)
                 feature_list.append(image_features.detach().cpu().numpy())
-                
-        file = save_pickle(log_base_path,[np.vstack(feature_list), np.hstack(target_list), dataloader.dataset.samples,dataloader.dataset.class_to_idx])
+
+        file = save_pickle(args.log_path, [np.vstack(feature_list), np.hstack(target_list), dataloader.dataset.samples, dataloader.dataset.class_to_idx])
 
     return file
-
 
 
 def few_shot_eval(model, data, args):
@@ -101,90 +107,49 @@ def few_shot_eval(model, data, args):
 
     for split in data:
         logging.info("Building few-shot %s classifier.", split)
-        
+
         file = run(model, data[split], args)
-        
+
         logging.info("Finished few-shot %s with total %d classes.", split, len(data[split].dataset.classes))
 
     logging.info("Finished few-shot.")
 
     return results, file
 
-def split(select, kshot, nfold, i2c, filepath=None):    
-    
-    test = [] #N
-    target = [] #N
-    train = [] #kshot x class
-    label = []
-    test_sample = []
-    random.seed(nfold)
-    for k,v in select.items():
-        num_v = len(v['feature'])
-        if num_v < kshot:
-            logging.info(f'{i2c[k]} has only {num_v} images. Less than {kshot} images for few-shot. ')
-        elif num_v < kshot+5:
-            logging.info(f'{i2c[k]} has only {num_v} images. Not enough for evaluation.')
-            
-        random.shuffle(v['feature'])
-        train.append(v['feature'][:kshot])
-        test+=v['feature'][kshot:]
-        test_sample+=v['sample'][kshot:]
-        label+=[k for i in range(kshot)]
-        test_num = num_v-kshot
-        target+=[k for i in range(test_num)]
-    
-    flatten_train = np.vstack(train)
-    label = np.array(label)
-    assert kshot*len(train) == flatten_train.shape[0] == label.shape[0]
-    assert len(train) == n_class
-    assert len(test) == len(target) == len(test_sample)
 
-    return flatten_train, label, test, target
+def linear_probe_5_shot(features, labels, c2i, k_shot=5):
+    selected_features = []
+    selected_labels = []
 
-def CL2N(x_flatten, x_mean):
-    x_flatten = x_flatten - x_mean #(class, emb) = (class, emb) - (emb,)
-    x_flatten = x_flatten / LA.norm(x_flatten, 2, 1)[:, None] #(class, emb) = (class, emb) / (class,1)
-    return x_flatten
+    for class_idx in np.unique(labels):
+        class_indices = np.where(labels == class_idx)[0]
 
-def get_acc(flatten_train, label, test, target, n_class, kshot, nfold):
-    train_mean = flatten_train.mean(axis=0)
-    
-    flatten_train = CL2N(flatten_train,train_mean)
-    test = CL2N(test,train_mean)
-    train_center = flatten_train.reshape(n_class, kshot, flatten_train.shape[-1]).mean(1)
+        if len(class_indices) >= k_shot:
+            selected_class_indices = np.random.choice(class_indices, k_shot, replace=False)
+        else:
+            logging.warning(f"Class {class_idx} has fewer than {k_shot} samples, using all available samples.")
+            selected_class_indices = class_indices
 
-    num_NN = 1
-    label = label[::kshot] #num of class
-    subtract = train_center[:, None, :] - test
-    distance = LA.norm(subtract, 2, axis=-1) #(train num:test num)
-    idx = np.argpartition(distance, num_NN, axis=0)[:num_NN] #(num_NN:train num)
-    nearest_samples = np.take(label, idx) #(num_NN:train num)
-    out = mode(nearest_samples, axis=0, keepdims=True)[0]
-    out = out.astype(int)
-    test_label = np.array(target)
-    acc = (out == test_label).mean()
+        selected_features.append(features[selected_class_indices])
+        selected_labels.append(labels[selected_class_indices])
 
-    return acc
+    selected_features = torch.cat([torch.tensor(x) for x in selected_features])
+    selected_labels = torch.cat([torch.tensor(x) for x in selected_labels])
+
+    return selected_features, selected_labels
+
 
 if __name__ == "__main__":
-    global args
     args = parse_args(sys.argv[1:])
     random_seed(args.seed, 0)
 
     if torch.cuda.is_available():
-        # This enables tf32 on Ampere GPUs which is only 8% slower than
-        # float16 and almost as accurate as float32
-        # This was a default in pytorch until 1.12
         torch.backends.cuda.matmul.allow_tf32 = True
         torch.backends.cudnn.benchmark = True
 
     device = init_device(args)
 
-    args.save_logs = args.logs and args.logs.lower() != "none"
-
-    # get the name of the experiments
     if args.save_logs and args.name is None:
-        # sanitize model name for filesystem/uri use
         model_name_safe = args.model.replace("/", "-")
         date_str = datetime.datetime.now().strftime("%Y_%m_%d-%H_%M_%S")
         args.name = "-".join(
@@ -196,122 +161,56 @@ if __name__ == "__main__":
                 "few_shot",
             ]
         )
-        
+
     if args.save_logs is None:
         args.log_path = None
     else:
         log_base_path = os.path.join(args.logs, args.name)
         os.makedirs(log_base_path, exist_ok=True)
-        log_filename = "out.log"
-        args.log_path = os.path.join(log_base_path, log_filename)
+        args.log_path = os.path.join(log_base_path, "out.log")
 
-    # Setup text logger
-    args.log_level = logging.DEBUG if args.debug else logging.INFO
-    setup_logging(args.log_path, args.log_level)
+    setup_logging(args.log_path, logging.INFO)
 
-    if (
-        isinstance(args.force_image_size, (tuple, list))
-        and len(args.force_image_size) == 1
-    ):
-        # arg is nargs, single (square) image size list -> int
-        args.force_image_size = args.force_image_size[0]
+    model, preprocess_train, preprocess_val = load_bioclip_model()
 
-    logging.info("Params:")
-    if args.save_logs is None:
-        for name in sorted(vars(args)):
-            val = getattr(args, name)
-            logging.info(f"  {name}: {val}")
-    else:
-        params_file = os.path.join(args.logs, args.name, "params.txt")
-        with open(params_file, "w") as f:
-            for name in sorted(vars(args)):
-                val = getattr(args, name)
-                logging.info(f"  {name}: {val}")
-                f.write(f"{name}: {val}\n")
+    if args.trace:
+        model = trace_model(model, batch_size=args.batch_size, device=device)
 
-    if args.task_type == 'eval':
-        feature_file = args.pretrained        
-    else:
-        model, preprocess_train, preprocess_val = create_model_and_transforms(
-            args.model,
-            args.pretrained,
-            precision=args.precision,
-            device=device,
-            jit=args.torchscript,
-            force_quick_gelu=args.force_quick_gelu,
-            force_custom_text=args.force_custom_text,
-            force_patch_dropout=None,
-            force_image_size=args.force_image_size,
-            pretrained_image=args.pretrained_image,
-            image_mean=args.image_mean,
-            image_std=args.image_std,
-            aug_cfg=args.aug_cfg,
-            output_dict=True,
-        )
+    data = {
+        "val-unseen": get_dataloader(
+            DatasetFromFile(args.data_root, args.label_filename, transform=preprocess_val),
+            batch_size=args.batch_size, num_workers=args.workers
+        ),
+    }
 
-        if args.trace:
-            model = trace_model(model, batch_size=args.batch_size, device=device)
+    _, feature_file = few_shot_eval(model, data, args)
 
-        logging.info("Model:")
-        logging.info(f"{str(model)}")
+    logging.info("Starting Linear Probing.")
 
-        # initialize datasets
-        data = {
-            "val-unseen": get_dataloader(
-                DatasetFromFile(args.data_root, args.label_filename, transform=preprocess_val),
-                batch_size=args.batch_size,num_workers=args.workers
-            ),
-        }
+    feature, target, samples, c2i = load_pickle(feature_file)
 
-        start_time = time.monotonic()
-                   
-        model.eval()
-        _, feature_file = few_shot_eval(model, data, args)             
+    features = torch.tensor(feature, dtype=torch.float32)
+    labels = torch.tensor(target, dtype=torch.long)
 
-        end_time = time.monotonic()
-        logging.info(f"feature extraction takes: {datetime.timedelta(seconds=end_time - start_time)}")
+    train_features, train_labels = linear_probe_5_shot(features, labels, c2i, k_shot=5)
 
-    if args.task_type == 'eval' or args.task_type == 'all':
-        feature, target, samples, c2i = load_pickle(feature_file)
+    linear_classifier = torch.nn.Linear(train_features.shape[1], len(c2i))
+    linear_classifier = linear_classifier.to(args.device)
 
-        i2c = dict([(v,k) for k,v in c2i.items()])
+    criterion = torch.nn.CrossEntropyLoss()
+    optimizer = torch.optim.Adam(linear_classifier.parameters(), lr=0.01)
 
-        if args.debug:
-            for i in range(len(target)):
-                assert target[i] == samples[i][1]
+    epochs = 300
+    for epoch in range(epochs):
+        linear_classifier.train()
+        optimizer.zero_grad()
 
+        outputs = linear_classifier(train_features.to(args.device))
+        loss = criterion(outputs, train_labels.to(args.device))
 
-        select = dict()
-        for idx in range(len(feature)):
-            f = feature[idx]
-            s = samples[idx]
-            cat = target[idx]
-            if cat in select:
-                select[cat]['feature'].append(f)
-                select[cat]['sample'].append(s)
-            else:
-                select[cat] = dict()
-                select[cat]['feature'] = [f]
-                select[cat]['sample'] = [s]
-                
-        count = sum([len(v['feature']) for v in select.values()])
-        n_class = len(select)
+        loss.backward()
+        optimizer.step()
 
-        logging.info("Num of classes: %d.\nNum of samples: %d.", n_class, count)
+        logging.info(f'Epoch [{epoch + 1}/{epochs}], Loss: {loss.item():.4f}')
 
-        for kshot in args.kshot_list:
-           
-            acc_list = []
-            for n in range(args.nfold):
-                #split
-                flatten_train, label, test, target = split(select, kshot, n, i2c)
-                acc = get_acc(flatten_train, label, test, target, n_class, kshot, n)
-                acc_list.append(acc)
-                logging.info(f"{kshot} shot No.{n} ACC: {acc:.4f}")
-            logging.info("!!!!!!Result: ")
-            logging.info("Dataset:  %s", args.data_root)
-            logging.info("Model:  %s", args.pretrained)
-            logging.info(f"{kshot} shot AVG ACC: {np.mean(acc_list)*100:.2f}")
-            logging.info(f"{kshot} shot STD: {np.std(acc_list)*100:.4f}")
-    
-    logging.info(f"Done!")
+    logging.info("Finished Linear Probing.")

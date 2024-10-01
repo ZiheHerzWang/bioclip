@@ -1,0 +1,410 @@
+[
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Adristyrannus/64277.jpg",
+        "label": 0
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Aleurocanthus spiniferus/61201.jpg",
+        "label": 1
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Ampelophaga/44386.jpg",
+        "label": 2
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Aphis citricola Vander Goot/65192.jpg",
+        "label": 3
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Apolygus lucorum/40911.jpg",
+        "label": 4
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Bactrocera tsuneonis/62587.jpg",
+        "label": 5
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Beet spot flies/29309.jpg",
+        "label": 6
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Brevipoalpus lewisi McGregor/43000.jpg",
+        "label": 7
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Ceroplastes rubens/60433.jpg",
+        "label": 8
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Chlumetia transversa/68078.jpg",
+        "label": 9
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Chrysomphalus aonidum/60747.jpg",
+        "label": 10
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Cicadella viridis/51821.jpg",
+        "label": 11
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Cicadellidae/71153.jpg",
+        "label": 12
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Colomerus vitis/42953.jpg",
+        "label": 13
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Dacus dorsalis(Hendel)/62460.jpg",
+        "label": 14
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Dasineura sp/66660.jpg",
+        "label": 15
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Deporaus marginatus Pascoe/68068.jpg",
+        "label": 16
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Erythroneura apicalis/58208.jpg",
+        "label": 17
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Icerya purchasi Maskell/59671.jpg",
+        "label": 18
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Lawana imitata Melichar/67129.jpg",
+        "label": 19
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Limacodidae/41971.jpg",
+        "label": 20
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Locustoidea/33355.jpg",
+        "label": 21
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Lycorma delicatula/49714.jpg",
+        "label": 22
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Mango flat beak leafhopper/68466.jpg",
+        "label": 23
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Miridae/56931.jpg",
+        "label": 24
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Nipaecoccus vastalor/61010.jpg",
+        "label": 25
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Panonchus citri McGregor/58808.jpg",
+        "label": 26
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Papilio xuthus/58370.jpg",
+        "label": 27
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Parlatoria zizyphus Lucus/60853.jpg",
+        "label": 28
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Phyllocnistis citrella Stainton/64695.jpg",
+        "label": 29
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Phyllocoptes oleiverus ashmead/59055.jpg",
+        "label": 30
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Pieris canidia/40637.jpg",
+        "label": 31
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Polyphagotars onemus latus/43366.jpg",
+        "label": 32
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Potosiabre vitarsis/21526.jpg",
+        "label": 33
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Prodenia litura/62753.jpg",
+        "label": 34
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Pseudococcus comstocki Kuwana/43661.jpg",
+        "label": 35
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Rhytidodera bowrinii white/68895.jpg",
+        "label": 36
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Rice Stemfly/04272.jpg",
+        "label": 37
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Salurnis marginella Guerr/67633.jpg",
+        "label": 38
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Scirtothrips dorsalis Hood/65799.jpg",
+        "label": 39
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Sternochetus frigidus/69382.jpg",
+        "label": 40
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Tetradacus c Bactrocera minax/61972.jpg",
+        "label": 41
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Thrips/39672.jpg",
+        "label": 42
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Toxoptera aurantii/64981.jpg",
+        "label": 43
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Toxoptera citricidus/64778.jpg",
+        "label": 44
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Trialeurodes vaporariorum/58071.jpg",
+        "label": 45
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Unaspis yanonensis/60336.jpg",
+        "label": 46
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Viteus vitifoliae/42726.jpg",
+        "label": 47
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/Xylotrechus/50655.jpg",
+        "label": 48
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/alfalfa plant bug/32008.jpg",
+        "label": 49
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/alfalfa seed chalcid/40071.jpg",
+        "label": 50
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/alfalfa weevil/30552.jpg",
+        "label": 51
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/aphids/18617.jpg",
+        "label": 52
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/army worm/16980.jpg",
+        "label": 53
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/asiatic rice borer/02615.jpg",
+        "label": 54
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/beet army worm/27683.jpg",
+        "label": 55
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/beet fly/25865.jpg",
+        "label": 56
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/beet weevil/29908.jpg",
+        "label": 57
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/bird cherry-oataphid/23563.jpg",
+        "label": 58
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/black cutworm/12358.jpg",
+        "label": 59
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/blister beetle/37042.jpg",
+        "label": 60
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/brown plant hopper/05076.jpg",
+        "label": 61
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/cabbage army worm/27131.jpg",
+        "label": 62
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/cerodonta denticornis/25748.jpg",
+        "label": 63
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/corn borer/14595.jpg",
+        "label": 64
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/english grain aphid/22831.jpg",
+        "label": 65
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/flax budworm/31805.jpg",
+        "label": 66
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/flea beetle/25967.jpg",
+        "label": 67
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/grain spreader thrips/07980.jpg",
+        "label": 68
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/green bug/23237.jpg",
+        "label": 69
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/grub/09225.jpg",
+        "label": 70
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/large cutworm/13105.jpg",
+        "label": 71
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/legume blister beetle/35442.jpg",
+        "label": 72
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/longlegged spider mite/25010.jpg",
+        "label": 73
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/lytta polita/35103.jpg",
+        "label": 74
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/meadow moth/29769.jpg",
+        "label": 75
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/mole cricket/10359.jpg",
+        "label": 76
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/odontothrips loti/39094.jpg",
+        "label": 77
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/oides decempunctata/43050.jpg",
+        "label": 78
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/paddy stem maggot/01742.jpg",
+        "label": 79
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/parathrene regalis/43823.jpg",
+        "label": 80
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/peach borer/22363.jpg",
+        "label": 81
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/penthaleus major/24635.jpg",
+        "label": 82
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/red spider/13829.jpg",
+        "label": 83
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/rice gall midge/03636.jpg",
+        "label": 84
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/rice leaf caterpillar/01386.jpg",
+        "label": 85
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/rice leaf roller/01083.jpg",
+        "label": 86
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/rice leafhopper/07618.jpg",
+        "label": 87
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/rice shell pest/08169.jpg",
+        "label": 88
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/rice water weevil/07141.jpg",
+        "label": 89
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/sericaorient alismots chulsky/30157.jpg",
+        "label": 90
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/small brown plant hopper/06442.jpg",
+        "label": 91
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/tarnished plant bug/32705.jpg",
+        "label": 92
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/therioaphis maculata Buckton/38871.jpg",
+        "label": 93
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/wheat blossom midge/24127.jpg",
+        "label": 94
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/wheat phloeothrips/25301.jpg",
+        "label": 95
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/wheat sawfly/25567.jpg",
+        "label": 96
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/white backed plant hopper/05786.jpg",
+        "label": 97
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/white margined moth/11846.jpg",
+        "label": 98
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/wireworm/11130.jpg",
+        "label": 99
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/yellow cutworm/13489.jpg",
+        "label": 100
+    },
+    {
+        "img_path": "/home/wang.14629/CoCoOp_BioCLIP/test_image/own_cocoop/DATA/Insect/output/yellow rice borer/03168.jpg",
+        "label": 101
+    }
+]
