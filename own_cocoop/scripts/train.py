@@ -7,7 +7,7 @@ from torch import optim
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
 from PIL import Image
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'models')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'model')))
 from cocoop_bioclip import load_bioclip_to_cpu, CustomCLIP
 
 class CustomDataset(torch.utils.data.Dataset):
