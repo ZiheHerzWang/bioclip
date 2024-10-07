@@ -13,43 +13,22 @@ class TextEncoder(nn.Module):
         self.ln_final = clip_model.ln_final
         self.text_projection = clip_model.text_projection
         self.attn_mask = clip_model.attn_mask
-        self.cast_dtype = torch.float32
+        self.cast_dtype = torch.float16
         self.token_embedding = clip_model.token_embedding
-        self.cls_emb = clip_model.cls_emb
+
 
     def forward(self, text, normalize: bool = False):
         cast_dtype = self.transformer.get_cast_dtype()
-        seq_len = text.shape[1]
 
         x = self.token_embedding(text).to(cast_dtype)  # [batch_size, n_ctx, d_model]
-        attn_mask = self.attn_mask
-        if self.cls_emb is not None:
-            seq_len += 1
-            x = torch.cat([x, self._repeat(self.cls_emb, x.shape[0])], dim=1)
-            cls_mask = self.build_cls_mask(text, cast_dtype)
-            attn_mask = attn_mask[None, :seq_len, :seq_len] + cls_mask[:, :seq_len, :seq_len]
 
-        x = x + self.positional_embedding[:seq_len].to(cast_dtype)
-        x = x.permute(1, 0, 2)  # NLD -> LND
-        x = self.transformer(x, attn_mask=attn_mask)
-        x = x.permute(1, 0, 2)  # LND -> NLD
-
-        # x.shape = [batch_size, n_ctx, transformer.width]
+        x = x + self.positional_embedding.to(cast_dtype)
+        x = self.transformer(x, attn_mask=self.attn_mask)
+        x = self.ln_final(x)  # [batch_size, n_ctx, transformer.width]
         # take features from the eot embedding (eot_token is the highest number in each sequence)
-        if self.cls_emb is not None:
-            pooled, tokens = x[:, -1], x[:, :-1]
-            pooled = self.ln_final(pooled)
-        else:
-            x = self.ln_final(x)
-            pooled, tokens = x[torch.arange(x.shape[0]), text.argmax(dim=-1)], x
-
-        if self.text_projection is not None:
-            pooled = pooled @ self.text_projection
-
-        if self.output_tokens:
-            return pooled, tokens
-
-        return pooled
+        x = x[torch.arange(x.shape[0]), text.argmax(dim=-1)] @ self.text_projection
+        return F.normalize(x, dim=-1) if normalize else x
+    
     
 def load_bioclip_to_cpu():
     model, preprocess_train, preprocess_val = open_clip.create_model_and_transforms('hf-hub:imageomics/bioclip')
